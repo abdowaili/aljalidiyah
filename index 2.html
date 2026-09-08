@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>الجليديه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#DCC9A0;
+    --sand-light:#EFE4C9;
+    --brown:#3E2B1E;
+    --brown-soft:#7A6650;
+    --olive:#6E7F45;
+    --olive-dark:#54622F;
+    --cream:#FBF6EC;
+    --white:#FFFFFF;
+    --red:#C1443B;
+    --orange:#D9873D;
+    --yellow:#C79A2A;
+    --green:#5E8A52;
+    --radius:16px;
+    --shadow:0 3px 14px rgba(62,43,30,.14);
+    --line:#E4D8BE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--brown);
+    font-family:'Cairo',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  button, input, select, textarea{font-family:inherit;}
+  #app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:78px;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    background:var(--brown);color:var(--cream);
+    padding:14px 16px 12px;
+    display:flex;align-items:center;justify-content:space-between;
+    box-shadow:var(--shadow);
+  }
+  .brand{display:flex;align-items:baseline;gap:8px;}
+  .brand .tag{
+    background:var(--olive);color:var(--cream);
+    font-weight:800;font-size:15px;padding:4px 10px;border-radius:8px;
+    letter-spacing:.5px;
+  }
+  .brand .sub{font-size:11px;color:var(--sand);opacity:.85;}
+  .topbar-actions{display:flex;gap:10px;align-items:center;}
+  .icon-btn{
+    background:rgba(255,255,255,.08);border:none;color:var(--cream);
+    width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:17px;cursor:pointer;position:relative;
+  }
+  .icon-btn .badge{
+    position:absolute;top:-3px;left:-3px;background:var(--red);color:#fff;
+    font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;padding:0 3px;
+  }
+
+  /* ---------- Bottom nav ---------- */
+  .bottomnav{
+    position:fixed;bottom:0;left:0;right:0;z-index:30;
+    max-width:520px;margin:0 auto;
+    background:var(--white);border-top:1px solid var(--line);
+    display:flex;justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(62,43,30,.08);
+  }
+  .navbtn{
+    background:none;border:none;display:flex;flex-direction:column;align-items:center;
+    gap:2px;color:var(--brown-soft);font-size:10.5px;font-weight:600;
+    padding:6px 8px;border-radius:10px;flex:1;cursor:pointer;
+  }
+  .navbtn .ic{font-size:19px;}
+  .navbtn.active{color:var(--olive-dark);background:var(--sand-light);}
+
+  /* ---------- Generic layout ---------- */
+  .view{padding:14px 14px 10px;}
+  .section-title{font-size:17px;font-weight:800;margin:18px 0 10px;color:var(--brown);}
+  .section-title:first-child{margin-top:2px;}
+  .muted{color:var(--brown-soft);font-size:13px;}
+  .row{display:flex;gap:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+
+  /* ---------- Stat cards ---------- */
+  .stat-card{
+    background:var(--white);border-radius:var(--radius);padding:12px 10px;
+    box-shadow:var(--shadow);text-align:center;border-bottom:3px solid var(--olive);
+  }
+  .stat-card .num{font-size:22px;font-weight:800;color:var(--brown);display:block;line-height:1.2;}
+  .stat-card .lbl{font-size:11.5px;color:var(--brown-soft);}
+  .stat-card.warn{border-bottom-color:var(--orange);}
+  .stat-card.danger{border-bottom-color:var(--red);}
+  .stat-card.ok{border-bottom-color:var(--green);}
+
+  /* ---------- Alerts ---------- */
+  .alert{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--white);border-radius:12px;padding:10px 12px;margin-bottom:8px;
+    box-shadow:var(--shadow);border-right:5px solid var(--brown-soft);
+    cursor:pointer;
+  }
+  .alert.red{border-right-color:var(--red);}
+  .alert.orange{border-right-color:var(--orange);}
+  .alert.yellow{border-right-color:var(--yellow);}
+  .alert.green{border-right-color:var(--green);}
+  .dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex:none;}
+  .dot.red{background:var(--red);}
+  .dot.orange{background:var(--orange);}
+  .dot.yellow{background:var(--yellow);}
+  .dot.green{background:var(--green);}
+  .alert-text{font-size:13.5px;line-height:1.5;}
+  .empty{
+    text-align:center;color:var(--brown-soft);font-size:13.5px;
+    padding:26px 10px;background:var(--white);border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Tag-style animal card ---------- */
+  .tag-card{
+    background:var(--white);border-radius:14px;box-shadow:var(--shadow);
+    padding:12px;position:relative;margin-bottom:12px;border-right:6px solid var(--green);
+    display:flex;gap:12px;cursor:pointer;
+  }
+  .tag-card::before{
+    content:'';position:absolute;top:10px;right:-3px;width:9px;height:9px;
+    background:var(--cream);border:2px solid var(--sand);border-radius:50%;
+  }
+  .tag-card.status-yellow{border-right-color:var(--yellow);}
+  .tag-card.status-orange{border-right-color:var(--orange);}
+  .tag-card.status-red{border-right-color:var(--red);}
+  .tag-thumb{
+    width:56px;height:56px;border-radius:10px;background:var(--sand-light);
+    display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;
+    overflow:hidden;
+  }
+  .tag-thumb img{width:100%;height:100%;object-fit:cover;}
+  .tag-info{flex:1;min-width:0;}
+  .tag-top{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+  .tag-id{font-weight:800;font-size:14.5px;}
+  .tag-name{color:var(--brown-soft);font-size:12.5px;}
+  .tag-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;}
+  .chip{
+    background:var(--sand-light);color:var(--brown);font-size:11px;font-weight:600;
+    padding:3px 8px;border-radius:20px;
+  }
+  .chip.soft{background:transparent;border:1px solid var(--line);}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    background:var(--olive);color:#fff;border:none;border-radius:12px;
+    padding:12px 16px;font-weight:700;font-size:14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  }
+  .btn:active{background:var(--olive-dark);}
+  .btn.block{width:100%;}
+  .btn.ghost{background:transparent;color:var(--olive-dark);border:1.5px solid var(--olive);}
+  .btn.small{padding:8px 12px;font-size:12.5px;border-radius:10px;}
+  .btn.danger{background:var(--red);}
+  .fab{
+    position:fixed;bottom:88px;left:50%;transform:translateX(-50%);
+    max-width:520px;
+  }
+  .fab-inner{position:relative;left:190px;}
+
+  /* ---------- Form elements ---------- */
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--brown-soft);margin-bottom:5px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;
+    background:var(--white);font-size:14px;color:var(--brown);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--olive);border-color:var(--olive);}
+  .field textarea{resize:vertical;min-height:60px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(62,43,30,.45);z-index:100;
+    display:flex;align-items:flex-end;
+  }
+  .modal-sheet{
+    background:var(--cream);width:100%;max-width:520px;margin:0 auto;
+    border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;
+    padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+    animation:slideUp .22s ease-out;
+  }
+  @keyframes slideUp{from{transform:translateY(24px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .modal-handle{width:38px;height:4px;background:var(--line);border-radius:3px;margin:0 auto 12px;}
+  .modal-title{font-size:16.5px;font-weight:800;margin-bottom:14px;}
+  .modal-close{
+    position:absolute;top:14px;left:14px;background:var(--sand-light);border:none;
+    width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;color:var(--brown);
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabitem{
+    flex:none;background:var(--white);border:1.5px solid var(--line);color:var(--brown-soft);
+    padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  .tabitem.active{background:var(--olive);border-color:var(--olive);color:#fff;}
+
+  /* ---------- Profile header ---------- */
+  .profile-head{
+    background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:16px;display:flex;gap:14px;align-items:center;margin-bottom:14px;
+  }
+  .profile-thumb{
+    width:76px;height:76px;border-radius:14px;background:var(--sand-light);
+    display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex:none;
+  }
+  .profile-thumb img{width:100%;height:100%;object-fit:cover;}
+  .profile-name{font-size:17px;font-weight:800;}
+  .profile-sub{font-size:12.5px;color:var(--brown-soft);margin-top:2px;}
+
+  .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .kv:last-child{border-bottom:none;}
+  .kv .k{color:var(--brown-soft);}
+  .kv .v{font-weight:700;}
+
+  .list-item{
+    background:var(--white);border-radius:12px;padding:11px 13px;margin-bottom:9px;
+    box-shadow:var(--shadow);font-size:13px;
+  }
+  .list-item .top{display:flex;justify-content:space-between;font-weight:700;margin-bottom:3px;}
+  .list-item .top .date{color:var(--brown-soft);font-weight:600;font-size:12px;}
+
+  .progress-wrap{background:var(--sand-light);border-radius:20px;height:10px;overflow:hidden;margin:8px 0;}
+  .progress-bar{height:100%;background:var(--olive);border-radius:20px;}
+
+  .timeline{position:relative;padding-right:18px;}
+  .timeline::before{content:'';position:absolute;right:5px;top:4px;bottom:4px;width:2px;background:var(--line);}
+  .tl-item{position:relative;margin-bottom:16px;}
+  .tl-item::before{content:'';position:absolute;right:-18px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--olive);}
+  .tl-date{font-size:11.5px;color:var(--brown-soft);font-weight:700;}
+  .tl-text{font-size:13.5px;margin-top:2px;}
+
+  .search-overlay{
+    position:fixed;inset:0;background:var(--cream);z-index:90;max-width:520px;margin:0 auto;
+    display:flex;flex-direction:column;
+  }
+  .search-input-wrap{padding:14px;display:flex;gap:8px;background:var(--brown);}
+  .search-input-wrap input{flex:1;border-radius:10px;border:none;padding:11px 12px;font-size:14px;}
+
+  .login-wrap{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:30px;background:linear-gradient(180deg, var(--brown) 0%, var(--brown) 40%, var(--cream) 40%);
+  }
+  .login-card{
+    background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:28px 22px;width:100%;max-width:360px;
+  }
+  .login-logo{text-align:center;margin-bottom:22px;}
+  .login-logo .tag{
+    display:inline-block;background:var(--olive);color:#fff;font-weight:800;font-size:22px;
+    padding:8px 18px;border-radius:12px;letter-spacing:.5px;
+  }
+  .login-logo .sub{color:var(--sand-light);font-size:12.5px;margin-top:8px;}
+  .hint{font-size:11.5px;color:var(--brown-soft);text-align:center;margin-top:10px;line-height:1.6;}
+
+  .weight-chart{width:100%;height:110px;}
+  .toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--brown);color:#fff;
+    padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;z-index:200;box-shadow:var(--shadow);
+    max-width:90%;text-align:center;
+  }
+  .drawer-list .list-item{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+  .drawer-list .list-item .ic{font-size:18px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://ablltpquylsxxsyywiwg.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_QbJcjR9USu2jbwx7T_o6FA_e0RhnXWz';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+
+/* ============================= STATE ============================= */
+let state = null;
+let session = { loggedIn:false, user:null, view:'dashboard', params:{} };
+let saveTimer = null;
+
+function defaultState(){
+  return {
+    settings:{
+      farmName:'الجليديه',
+      idPrefixes:{ cow:'C', camel:'CAM', sheep:'S' },
+      typeLabels:{ cow:{m:'الثور',f:'البقرة',plural:'الأبقار'}, camel:{m:'الجمل',f:'الناقة',plural:'الإبل'}, sheep:{m:'الكبش',f:'النعجة',plural:'الغنم'} },
+      gestation:{ cow:283, camel:390, sheep:150 },
+      auth:{ username:'admin', password:'admin' }
+    },
+    animals:[],
+    tasks:[]
+  };
+}
+
+async function loadState(){
+  if(!session.user){ state = defaultState(); return; }
+  try{
+    const { data, error } = await supabaseClient
+      .from('farm_state')
+      .select('state_json')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+    if(error) throw error;
+    if(data && data.state_json){
+      state = data.state_json;
+    } else {
+      state = defaultState();
+      const { error: insertError } = await supabaseClient.from('farm_state').upsert({
+        user_id: session.user.id, state_json: state, updated_at: new Date().toISOString()
+      }, { onConflict:'user_id' });
+      if(insertError) throw insertError;
+    }
+  }catch(e){
+    console.error(e);
+    state = defaultState();
+    showToast('تعذر تحميل بيانات المزرعة من قاعدة البيانات');
+  }
+  if(!state.settings) state.settings = defaultState().settings;
+  if(!state.animals) state.animals = [];
+  if(!state.tasks) state.tasks = [];
+}
+
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    if(!session.user) return;
+    try{
+      const { error } = await supabaseClient.from('farm_state').upsert({
+        user_id: session.user.id, state_json: state, updated_at: new Date().toISOString()
+      }, { onConflict:'user_id' });
+      if(error) throw error;
+    }catch(e){
+      console.error(e);
+      showToast('تعذر الحفظ السحابي، تحقق من الاتصال');
+    }
+  }, 350);
+}
+
+/* ============================= HELPERS ============================= */
+function uid(p){ return p+'_'+Math.random().toString(36).slice(2,9); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function nowTimeStr(){ const d=new Date(); return d.toTimeString().slice(0,5); }
+function daysBetween(a,b){ return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00'))/86400000); }
+function fmtDate(d){ if(!d) return '—'; const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('ar-OM',{day:'numeric',month:'long',year:'numeric'}); }
+function fmtDateTime(v){ if(!v) return '—'; const dt=new Date(v); return dt.toLocaleString('ar-OM',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}); }
+function isDueDateTime(v){ return !!v && new Date(v).getTime() <= Date.now(); }
+function esc(s){ return (s===undefined||s===null) ? '' : String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function arNum(n, s, du, pl, ma){
+  if(n<=0) return null;
+  if(n===1) return s;
+  if(n===2) return du;
+  if(n>=3 && n<=10) return n+' '+pl;
+  return n+' '+ma;
+}
+function calcAge(birth){
+  if(!birth) return '—';
+  const b=new Date(birth+'T00:00:00'), n=new Date();
+  let y=n.getFullYear()-b.getFullYear(), m=n.getMonth()-b.getMonth(), d=n.getDate()-b.getDate();
+  if(d<0){ m--; d += new Date(n.getFullYear(), n.getMonth(), 0).getDate(); }
+  if(m<0){ y--; m+=12; }
+  const parts=[
+    arNum(y,'سنة','سنتان','سنوات','سنة'),
+    arNum(m,'شهر','شهران','أشهر','شهرًا'),
+    arNum(d,'يوم','يومان','أيام','يومًا')
+  ].filter(Boolean);
+  return parts.length ? parts.join(' و') : 'أقل من يوم';
+}
+
+function typeLabel(type, plural){
+  const t = state.settings.typeLabels[type];
+  if(!t) return type;
+  return plural ? t.plural : t.f;
+}
+function animalLabel(a){
+  const t = state.settings.typeLabels[a.type] || {m:a.type,f:a.type};
+  const base = a.gender==='ذكر' ? t.m : t.f;
+  return `${base} ${a.customId}${a.name ? ' ('+a.name+')' : ''}`;
+}
+function animalById(id){ return state.animals.find(x=>x.id===id); }
+
+function nextCustomId(type){
+  const prefix = state.settings.idPrefixes[type] || type.toUpperCase();
+  const nums = state.animals.filter(a=>a.type===type).map(a=>{
+    const m = (a.customId||'').match(/(\d+)\s*$/);
+    return m ? parseInt(m[1],10) : 0;
+  });
+  const max = nums.length ? Math.max(...nums) : 0;
+  return prefix + '-' + String(max+1).padStart(3,'0');
+}
+
+function addTimeline(animal, text, type){
+  animal.timeline = animal.timeline || [];
+  animal.timeline.unshift({ date: todayISO(), text, type: type||'عام' });
+}
+
+function healthColor(status){
+  return { 'سليم':'green', 'تحت المراقبة':'yellow', 'يحتاج علاج':'orange', 'حالة عاجلة':'red' }[status] || 'green';
+}
+
+function computeNotifications(){
+  const notes = [];
+  const today = todayISO();
+  state.animals.forEach(a=>{
+    if(a.status !== 'موجود في المزرعة') return;
+    if(a.pregnancy && a.pregnancy.active){
+      const rem = daysBetween(today, a.pregnancy.dueDate);
+      if(rem <= 30){
+        const level = rem<=3 ? 'red' : rem<=7 ? 'orange' : 'yellow';
+        const txt = rem<0 ? `${animalLabel(a)} تجاوزت موعد الولادة المتوقع` : `${animalLabel(a)} متوقع ولادتها خلال ${rem<=0?'اليوم':rem+' '+(rem===1?'يوم':'أيام')}`;
+        notes.push({ level, text: txt, animalId:a.id, kind:'ولادة' });
+      }
+    }
+    (a.followUps||[]).forEach(f=>{
+      if(f.active && isDueDateTime(f.nextDue)){
+        notes.push({ level:'red', text:`${animalLabel(a)} تحتاج متابعة الآن — ${f.reason} · الاستحقاق ${fmtDateTime(f.nextDue)}`, animalId:a.id, kind:'متابعة' });
+      }
+    });
+    const lastBreeding = (a.breedings||[]).slice(-1)[0];
+    if(!(a.pregnancy && a.pregnancy.active) && lastBreeding && lastBreeding.pregCheckDate){
+      const checkRem = daysBetween(today, lastBreeding.pregCheckDate);
+      if(checkRem <= 3){
+        const level = checkRem < 0 ? 'red' : checkRem === 0 ? 'orange' : 'yellow';
+        const text = checkRem < 0
+          ? `${animalLabel(a)} فحص الحمل متأخر ${Math.abs(checkRem)} يوم`
+          : checkRem === 0
+            ? `${animalLabel(a)} موعد فحص الحمل اليوم`
+            : `${animalLabel(a)} موعد فحص الحمل خلال ${checkRem} أيام`;
+        notes.push({ level, text, animalId:a.id, kind:'فحص حمل' });
+      }
+    }
+    (a.vaccinations||[]).forEach(v=>{
+      if(v.nextDate){
+        const rem = daysBetween(today, v.nextDate);
+        if(rem>=0 && rem<=3){
+          notes.push({ level: rem===0?'red':'yellow', text:`${animalLabel(a)} لديها تطعيم (${v.name}) ${rem===0?'اليوم':'خلال '+rem+' أيام'}`, animalId:a.id, kind:'تطعيم' });
+        }
+      }
+    });
+    (a.medications||[]).forEach(m=>{
+      if(m.startDate<=today && m.endDate>=today){
+        notes.push({ level:'yellow', text:`${animalLabel(a)} ضمن برنامج دواء: ${m.name}`, animalId:a.id, kind:'دواء' });
+      }
+    });
+    if(a.healthStatus === 'حالة عاجلة'){
+      notes.push({ level:'red', text:`${animalLabel(a)} في حالة صحية عاجلة`, animalId:a.id, kind:'صحة' });
+    } else if(a.healthStatus === 'يحتاج علاج'){
+      notes.push({ level:'orange', text:`${animalLabel(a)} يحتاج علاج`, animalId:a.id, kind:'صحة' });
+    }
+  });
+  state.tasks.forEach(t=>{
+    if(!t.done && t.dueDate){
+      if(t.dueDate < today) notes.push({ level:'red', text:`مهمة متأخرة: ${t.title}`, taskId:t.id, kind:'مهمة' });
+      else if(t.dueDate === today) notes.push({ level:'orange', text:`مهمة اليوم: ${t.title}`, taskId:t.id, kind:'مهمة' });
+    }
+  });
+  const rank = {red:0, orange:1, yellow:2, green:3};
+  notes.sort((a,b)=>rank[a.level]-rank[b.level]);
+  return notes;
+}
+
+function showToast(msg){
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2200);
+}
+
+/* ============================= MODAL ============================= */
+function openModal(title, innerHtml, onMount){
+  closeModal();
+  const bd = document.createElement('div');
+  bd.className='modal-backdrop'; bd.id='modalBackdrop';
+  bd.innerHTML = `<div class="modal-sheet" style="position:relative">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-handle"></div>
+      <div class="modal-title">${esc(title)}</div>
+      <div id="modalBody">${innerHtml}</div>
+    </div>`;
+  bd.addEventListener('click', (e)=>{ if(e.target===bd) closeModal(); });
+  document.body.appendChild(bd);
+  if(onMount) onMount();
+}
+function closeModal(){
+  const bd = document.getElementById('modalBackdrop');
+  if(bd) bd.remove();
+}
+
+/* ============================= RENDER SHELL ============================= */
+function renderApp(){
+  const app = document.getElementById('app');
+  if(!session.loggedIn){
+    app.innerHTML = renderLogin();
+    return;
+  }
+  const notifs = computeNotifications();
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand">
+        <span class="tag">الجليديه</span>
+        <span class="sub">إدارة الحلال</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="openSearch()">🔍</button>
+        <button class="icon-btn" onclick="navigate('alerts')">🔔${notifs.length?`<span class="badge">${notifs.length>9?'9+':notifs.length}</span>`:''}</button>
+      </div>
+    </div>
+    <div class="view" id="viewRoot"></div>
+    <div class="bottomnav">
+      ${navBtn('dashboard','🏠','الرئيسية')}
+      ${navBtn('animals','🐄','الحيوانات')}
+      ${navBtn('births','🍼','الولادات')}
+      ${navBtn('tasks','✅','المهام')}
+      ${navBtn('more','☰','المزيد')}
+    </div>
+  `;
+  renderView();
+}
+function navBtn(id, icon, label){
+  return `<button class="navbtn ${session.view===id?'active':''}" onclick="navigate('${id}')">
+    <span class="ic">${icon}</span><span>${label}</span></button>`;
+}
+function navigate(view, params){
+  session.view = view; session.params = params||{};
+  renderApp();
+  window.scrollTo(0,0);
+}
+function renderView(){
+  const root = document.getElementById('viewRoot');
+  const map = {
+    dashboard: renderDashboard,
+    animals: renderAnimalsList,
+    animalProfile: renderAnimalProfile,
+    births: renderUpcomingBirths,
+    tasks: renderTasks,
+    alerts: renderAlerts,
+    more: renderMore,
+    settings: renderSettings
+  };
+  root.innerHTML = (map[session.view] || renderDashboard)();
+}
+
+/* ============================= LOGIN ============================= */
+function renderLogin(){
+  return `
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="tag">الجليديه</span>
+      </div>
+      <div class="field"><label>البريد الإلكتروني</label><input id="loginUser" type="email" placeholder="name@example.com" autocomplete="email"></div>
+      <div class="field"><label>كلمة المرور</label><input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn block" onclick="doLogin()">تسجيل الدخول</button>
+      <div class="hint">نظام الجليديه خاص بالمزرعة. يتم إنشاء المستخدمين من لوحة Supabase فقط، ثم يمكن الدخول من أي جهاز بنفس البيانات.</div>
+    </div>
+  </div>`;
+}
+async function doLogin(){
+  const email = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if(!email || !password){ showToast('أدخل البريد الإلكتروني وكلمة المرور'); return; }
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if(error){ showToast('تعذر تسجيل الدخول: '+error.message); return; }
+  session.loggedIn = true; session.user = data.user;
+  await loadState();
+  navigate('dashboard');
+}
+async function logout(){
+  await supabaseClient.auth.signOut();
+  session.loggedIn=false; session.user=null; state=defaultState(); renderApp();
+}
+
+/* ============================= DASHBOARD ============================= */
+function renderDashboard(){
+  const animals = state.animals.filter(a=>a.status==='موجود في المزرعة');
+  const byType = t => animals.filter(a=>a.type===t).length;
+  const males = animals.filter(a=>a.gender==='ذكر').length;
+  const females = animals.filter(a=>a.gender==='أنثى').length;
+  const pregnant = animals.filter(a=>a.pregnancy && a.pregnancy.active).length;
+  const sick = animals.filter(a=>a.healthStatus==='يحتاج علاج' || a.healthStatus==='حالة عاجلة').length;
+  const upcomingBirths = animals.filter(a=>a.pregnancy && a.pregnancy.active && daysBetween(todayISO(),a.pregnancy.dueDate)<=14).length;
+  const followUpDue = animals.filter(a=>(a.followUps||[]).some(f=>f.active && isDueDateTime(f.nextDue))).length;
+  const notifs = computeNotifications().slice(0,5);
+  const todayTasks = state.tasks.filter(t=>!t.done && t.dueDate===todayISO());
+
+  return `
+    <div class="section-title">يحتاج انتباه الآن</div>
+    ${notifs.length ? notifs.map(n=>alertRow(n)).join('') : `<div class="empty">لا توجد حالات تحتاج انتباه حاليًا 🌿</div>`}
+    ${computeNotifications().length>5 ? `<div style="text-align:center;margin-top:6px"><button class="btn ghost small" onclick="navigate('alerts')">عرض كل التنبيهات</button></div>` : ''}
+
+    <div class="section-title">نظرة عامة</div>
+    <div class="grid3">
+      <div class="stat-card"><span class="num">${animals.length}</span><span class="lbl">إجمالي الحيوانات</span></div>
+      <div class="stat-card"><span class="num">${byType('cow')}</span><span class="lbl">أبقار</span></div>
+      <div class="stat-card"><span class="num">${byType('camel')}</span><span class="lbl">إبل</span></div>
+      <div class="stat-card"><span class="num">${byType('sheep')}</span><span class="lbl">غنم</span></div>
+      <div class="stat-card"><span class="num">${males}</span><span class="lbl">ذكور</span></div>
+      <div class="stat-card"><span class="num">${females}</span><span class="lbl">إناث</span></div>
+      <div class="stat-card ok"><span class="num">${pregnant}</span><span class="lbl">حوامل</span></div>
+      <div class="stat-card warn"><span class="num">${upcomingBirths}</span><span class="lbl">ولادات قريبة</span></div>
+      <div class="stat-card danger"><span class="num">${sick}</span><span class="lbl">تحتاج متابعة صحية</span></div>
+    </div>
+
+
+    <div class="section-title">أحداث اليوم</div>
+    ${todayTasks.length ? todayTasks.map(t=>`
+      <div class="list-item" onclick="toggleTaskDone('${t.id}')" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+        <span>☐ ${esc(t.title)}</span><span class="chip soft">${esc(t.type||'')}</span>
+      </div>`).join('') : `<div class="empty">لا توجد مهام لهذا اليوم</div>`}
+
+    <div style="margin-top:16px" class="grid2">
+      <button class="btn" onclick="openAddAnimal()">+ إضافة حيوان</button>
+      <button class="btn ghost" onclick="openAddTask()">+ إضافة مهمة</button>
+    </div>
+  `;
+}
+function alertRow(n){
+  return `<div class="alert ${n.level}" onclick="${n.animalId?`navigate('animalProfile',{id:'${n.animalId}'})`:''}">
+      <div class="dot ${n.level}"></div>
+      <div class="alert-text">${esc(n.text)}</div>
+    </div>`;
+}
+function renderAlerts(){
+  const notifs = computeNotifications();
+  return `<div class="section-title">مركز التنبيهات</div>
+    ${notifs.length ? notifs.map(alertRow).join('') : `<div class="empty">لا توجد تنبيهات حاليًا 🌿</div>`}`;
+}
+
+/* ============================= ANIMALS LIST ============================= */
+let animalsFilter = { type:'all', status:'موجود في المزرعة', text:'' };
+function renderAnimalsList(){
+  const types = [
+    {id:'all', label:'الكل'},
+    {id:'cow', label:'الأبقار'},
+    {id:'camel', label:'الإبل'},
+    {id:'sheep', label:'الغنم'}
+  ];
+  let list = state.animals.filter(a=>{
+    if(animalsFilter.type!=='all' && a.type!==animalsFilter.type) return false;
+    if(animalsFilter.status!=='all' && a.status!==animalsFilter.status) return false;
+    if(animalsFilter.text){
+      const q = animalsFilter.text.toLowerCase();
+      const hay = [a.customId,a.name,a.breed].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  return `
+    <div class="section-title">الحيوانات <span class="muted">(${list.length})</span></div>
+    <div class="field"><input placeholder="بحث بالرقم أو الاسم أو السلالة" value="${esc(animalsFilter.text)}" oninput="animalsFilter.text=this.value; renderView();"></div>
+    <div class="tabbar">
+      ${types.map(t=>`<div class="tabitem ${animalsFilter.type===t.id?'active':''}" onclick="animalsFilter.type='${t.id}'; renderView();">${t.label}</div>`).join('')}
+    </div>
+    <div class="tabbar">
+      ${['موجود في المزرعة','مباع','نافق','منقول','مفقود','all'].map(s=>`
+        <div class="tabitem ${animalsFilter.status===s?'active':''}" onclick="animalsFilter.status='${s}'; renderView();">${s==='all'?'كل الحالات':s}</div>`).join('')}
+    </div>
+    ${list.length ? list.map(a=>animalCard(a)).join('') : `<div class="empty">لا توجد حيوانات مطابقة</div>`}
+    <button class="btn block" style="margin-top:8px" onclick="openAddAnimal()">+ إضافة حيوان جديد</button>
+  `;
+}
+function animalCard(a){
+  const color = healthColor(a.healthStatus||'سليم');
+  const preg = a.pregnancy && a.pregnancy.active;
+  return `<div class="tag-card status-${color}" onclick="navigate('animalProfile',{id:'${a.id}'})">
+    <div class="tag-thumb">${a.photoUrl?`<img src="${esc(a.photoUrl)}">`:'🐾'}</div>
+    <div class="tag-info">
+      <div class="tag-top"><span class="tag-id">${esc(a.customId)}</span><span class="chip soft">${esc(a.gender||'')}</span></div>
+      <div class="tag-name">${esc(a.name||'بدون اسم')} · ${typeLabel(a.type)} · ${calcAge(a.birthDate)}</div>
+      <div class="tag-meta">
+        <span class="chip">${esc(a.healthStatus||'سليم')}</span>
+        ${preg?`<span class="chip" style="background:var(--sand)">حامل — باقي ${Math.max(0,daysBetween(todayISO(),a.pregnancy.dueDate))} يوم</span>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- Add / edit animal ---- */
+function openAddAnimal(prefill){
+  const p = prefill || {};
+  const animalOptions = (type)=> state.animals.filter(a=> !type || a.type===type).map(a=>`<option value="${a.id}" ${p.fatherId===a.id||p.motherId===a.id?'selected':''}>${esc(animalLabel(a))}</option>`).join('');
+  openModal(p._offspringOf ? 'إنشاء ملف للمولود' : 'إضافة حيوان جديد', `
+    <div class="field"><label>النوع</label>
+      <select id="fType" onchange="document.getElementById('fCustomIdHint').textContent = nextCustomId(this.value)">
+        <option value="cow" ${p.type==='cow'?'selected':''}>بقرة</option>
+        <option value="camel" ${p.type==='camel'?'selected':''}>ناقة/جمل</option>
+        <option value="sheep" ${p.type==='sheep'?'selected':''}>غنم</option>
+      </select>
+      <div class="muted" style="margin-top:4px">الرقم التالي المقترح: <b id="fCustomIdHint">${nextCustomId(p.type||'cow')}</b></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>الاسم (اختياري)</label><input id="fName" value="${esc(p.name||'')}"></div>
+      <div class="field"><label>الجنس</label>
+        <select id="fGender"><option ${p.gender==='ذكر'?'selected':''}>ذكر</option><option ${p.gender==='أنثى'||!p.gender?'selected':''}>أنثى</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>السلالة</label><input id="fBreed" value="${esc(p.breed||'')}"></div>
+      <div class="field"><label>اللون</label><input id="fColor" value="${esc(p.color||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ الميلاد</label><input type="date" id="fBirth" value="${esc(p.birthDate||todayISO())}"></div>
+      <div class="field"><label>تاريخ دخول المزرعة</label><input type="date" id="fEntry" value="${esc(p.entryDate||todayISO())}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>الوزن الحالي (كجم)</label><input type="number" id="fWeight" value="${esc(p.weight||'')}"></div>
+      <div class="field"><label>الموقع</label><input id="fLocation" value="${esc(p.location||'')}"></div>
+    </div>
+    <div class="field"><label>رابط صورة (اختياري)</label><input id="fPhoto" placeholder="https://" value="${esc(p.photoUrl||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>رقم الأب (إن وجد في النظام)</label><select id="fFather"><option value="">— غير محدد —</option>${animalOptions()}</select></div>
+      <div class="field"><label>رقم الأم (إن وجدت في النظام)</label><select id="fMother"><option value="">— غير محدد —</option>${animalOptions()}</select></div>
+    </div>
+    <div class="field"><label>ملاحظات</label><textarea id="fNotes">${esc(p.notes||'')}</textarea></div>
+    <button class="btn block" onclick="saveAnimal(${p._offspringOf?`'${p._offspringOf}'`:'null'})">حفظ الحيوان</button>
+  `);
+  if(p.fatherId) setTimeout(()=>{ document.getElementById('fFather').value=p.fatherId; },0);
+  if(p.motherId) setTimeout(()=>{ document.getElementById('fMother').value=p.motherId; },0);
+}
+function saveAnimal(offspringOfBirthCtx){
+  const type = document.getElementById('fType').value;
+  const a = {
+    id: uid('a'),
+    customId: nextCustomId(type),
+    type,
+    name: document.getElementById('fName').value.trim(),
+    gender: document.getElementById('fGender').value,
+    breed: document.getElementById('fBreed').value.trim(),
+    color: document.getElementById('fColor').value.trim(),
+    birthDate: document.getElementById('fBirth').value,
+    entryDate: document.getElementById('fEntry').value,
+    weight: parseFloat(document.getElementById('fWeight').value)||null,
+    location: document.getElementById('fLocation').value.trim(),
+    photoUrl: document.getElementById('fPhoto').value.trim(),
+    fatherId: document.getElementById('fFather').value || null,
+    motherId: document.getElementById('fMother').value || null,
+    notes: document.getElementById('fNotes').value.trim(),
+    status: 'موجود في المزرعة',
+    healthStatus: 'سليم',
+    pregnancy: null,
+    breedings: [], births: [], healthCases: [], medications: [],
+    vaccinations: [], weights: [], followUps: [], timeline: []
+  };
+  if(a.weight){ a.weights.push({date:todayISO(), weight:a.weight, notes:'وزن عند الإضافة'}); }
+  addTimeline(a, 'تم إنشاء ملف الحيوان');
+  state.animals.push(a);
+  saveState();
+  closeModal();
+  showToast('تم حفظ الحيوان: '+a.customId);
+  navigate('animalProfile',{id:a.id});
+}
+
+/* ============================= ANIMAL PROFILE ============================= */
+let profileTab = 'info';
+function renderAnimalProfile(){
+  const a = animalById(session.params.id);
+  if(!a) return `<div class="empty">الحيوان غير موجود</div>`;
+  const tabs = [
+    {id:'info', label:'المعلومات'},
+    {id:'breeding', label:'التلقيح'},
+    {id:'pregnancy', label:'الحمل'},
+    {id:'births', label:'الولادات'},
+    {id:'health', label:'الصحة'},
+    {id:'meds', label:'الأدوية'},
+    {id:'vacc', label:'التطعيمات'},
+    {id:'weight', label:'الوزن'},
+    {id:'followups', label:'المتابعات'},
+    {id:'timeline', label:'السجل الزمني'}
+  ];
+  return `
+    <div class="profile-head">
+      <div class="profile-thumb">${a.photoUrl?`<img src="${esc(a.photoUrl)}">`:'🐾'}</div>
+      <div>
+        <div class="profile-name">${esc(a.customId)} ${a.name?'— '+esc(a.name):''}</div>
+        <div class="profile-sub">${typeLabel(a.type)} · ${esc(a.gender)} · ${calcAge(a.birthDate)}</div>
+        <div style="margin-top:6px"><span class="chip">${esc(a.healthStatus||'سليم')}</span> <span class="chip soft">${esc(a.status)}</span></div>
+      </div>
+    </div>
+    <div class="tabbar">${tabs.map(t=>`<div class="tabitem ${profileTab===t.id?'active':''}" onclick="profileTab='${t.id}'; renderView();">${t.label}</div>`).join('')}</div>
+    <div id="profileTabBody">${renderProfileTab(a)}</div>
+  `;
+}
+function renderProfileTab(a){
+  switch(profileTab){
+    case 'info': return tabInfo(a);
+    case 'breeding': return tabBreeding(a);
+    case 'pregnancy': return tabPregnancy(a);
+    case 'births': return tabBirths(a);
+    case 'health': return tabHealth(a);
+    case 'meds': return tabMeds(a);
+    case 'vacc': return tabVacc(a);
+    case 'weight': return tabWeight(a);
+    case 'followups': return tabFollowups(a);
+    case 'timeline': return tabTimeline(a);
+    default: return '';
+  }
+}
+
+function tabInfo(a){
+  const father = a.fatherId ? animalById(a.fatherId) : null;
+  const mother = a.motherId ? animalById(a.motherId) : null;
+  const children = state.animals.filter(x=>x.fatherId===a.id || x.motherId===a.id);
+  return `
+    <div class="list-item">
+      <div class="kv"><span class="k">السلالة</span><span class="v">${esc(a.breed||'—')}</span></div>
+      <div class="kv"><span class="k">اللون</span><span class="v">${esc(a.color||'—')}</span></div>
+      <div class="kv"><span class="k">تاريخ الميلاد</span><span class="v">${fmtDate(a.birthDate)}</span></div>
+      <div class="kv"><span class="k">تاريخ دخول المزرعة</span><span class="v">${fmtDate(a.entryDate)}</span></div>
+      <div class="kv"><span class="k">الوزن الحالي</span><span class="v">${a.weight?a.weight+' كجم':'—'}</span></div>
+      <div class="kv"><span class="k">الموقع</span><span class="v">${esc(a.location||'—')}</span></div>
+      <div class="kv"><span class="k">الأب</span><span class="v">${father?esc(animalLabel(father)):'—'}</span></div>
+      <div class="kv"><span class="k">الأم</span><span class="v">${mother?esc(animalLabel(mother)):'—'}</span></div>
+      <div class="kv"><span class="k">الملاحظات</span><span class="v">${esc(a.notes||'—')}</span></div>
+    </div>
+    <div class="section-title" style="font-size:14.5px">الأبناء (${children.length})</div>
+    ${children.length ? children.map(c=>`<div class="list-item" style="cursor:pointer" onclick="navigate('animalProfile',{id:'${c.id}'})">${esc(animalLabel(c))}</div>`).join('') : `<div class="empty">لا يوجد أبناء مسجلون</div>`}
+    <div class="grid2" style="margin-top:12px">
+      <button class="btn ghost" onclick="openEditAnimal('${a.id}')">تعديل البيانات</button>
+      <button class="btn ghost" onclick="openChangeStatus('${a.id}')">تغيير الحالة</button>
+    </div>
+  `;
+}
+function openEditAnimal(id){
+  const a = animalById(id);
+  closeModal();
+  const animalOptions = () => state.animals.filter(x=>x.id!==id).map(x=>`<option value="${x.id}">${esc(animalLabel(x))}</option>`).join('');
+  openModal('تعديل بيانات '+a.customId, `
+    <div class="field-row">
+      <div class="field"><label>الاسم</label><input id="eName" value="${esc(a.name||'')}"></div>
+      <div class="field"><label>الجنس</label><select id="eGender"><option ${a.gender==='ذكر'?'selected':''}>ذكر</option><option ${a.gender==='أنثى'?'selected':''}>أنثى</option></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>السلالة</label><input id="eBreed" value="${esc(a.breed||'')}"></div>
+      <div class="field"><label>اللون</label><input id="eColor" value="${esc(a.color||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ الميلاد</label><input type="date" id="eBirth" value="${esc(a.birthDate||'')}"></div>
+      <div class="field"><label>الوزن الحالي</label><input type="number" id="eWeight" value="${esc(a.weight||'')}"></div>
+    </div>
+    <div class="field"><label>الموقع</label><input id="eLocation" value="${esc(a.location||'')}"></div>
+    <div class="field"><label>رابط صورة</label><input id="ePhoto" value="${esc(a.photoUrl||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>الأب</label><select id="eFather"><option value="">— غير محدد —</option>${animalOptions()}</select></div>
+      <div class="field"><label>الأم</label><select id="eMother"><option value="">— غير محدد —</option>${animalOptions()}</select></div>
+    </div>
+    <div class="field"><label>ملاحظات</label><textarea id="eNotes">${esc(a.notes||'')}</textarea></div>
+    <button class="btn block" onclick="saveEditAnimal('${id}')">حفظ التعديلات</button>
+  `);
+  setTimeout(()=>{ document.getElementById('eFather').value=a.fatherId||''; document.getElementById('eMother').value=a.motherId||''; },0);
+}
+function saveEditAnimal(id){
+  const a = animalById(id);
+  a.name = document.getElementById('eName').value.trim();
+  a.gender = document.getElementById('eGender').value;
+  a.breed = document.getElementById('eBreed').value.trim();
+  a.color = document.getElementById('eColor').value.trim();
+  a.birthDate = document.getElementById('eBirth').value;
+  const w = parseFloat(document.getElementById('eWeight').value);
+  if(w && w!==a.weight){ a.weight=w; a.weights.push({date:todayISO(),weight:w,notes:'تحديث يدوي'}); addTimeline(a,'تحديث الوزن إلى '+w+' كجم'); }
+  a.location = document.getElementById('eLocation').value.trim();
+  a.photoUrl = document.getElementById('ePhoto').value.trim();
+  a.fatherId = document.getElementById('eFather').value || null;
+  a.motherId = document.getElementById('eMother').value || null;
+  a.notes = document.getElementById('eNotes').value.trim();
+  saveState(); closeModal(); showToast('تم حفظ التعديلات'); renderView();
+}
+function openChangeStatus(id){
+  const a = animalById(id);
+  openModal('تغيير حالة الحيوان', `
+    <div class="field"><label>الحالة</label>
+      <select id="sStatus">
+        ${['موجود في المزرعة','مباع','نافق','مذبوح','منقول','مفقود'].map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>ملاحظة</label><textarea id="sNote" placeholder="سبب التغيير، سعر البيع إن وجد..."></textarea></div>
+    <button class="btn block" onclick="saveStatus('${id}')">حفظ</button>
+  `);
+}
+function saveStatus(id){
+  const a = animalById(id);
+  a.status = document.getElementById('sStatus').value;
+  const note = document.getElementById('sNote').value.trim();
+  addTimeline(a, `تغيير الحالة إلى: ${a.status}${note?' — '+note:''}`, 'حالة');
+  saveState(); closeModal(); showToast('تم تحديث الحالة'); renderView();
+}
+
+/* ---- Breeding ---- */
+function tabBreeding(a){
+  const others = state.animals.filter(x=>x.id!==a.id && x.gender!==a.gender);
+  return `
+    <button class="btn block" onclick="openAddBreeding('${a.id}')">+ تسجيل تلقيح</button>
+    <div class="section-title" style="font-size:14.5px">سجل التلقيح</div>
+    ${(a.breedings||[]).length ? a.breedings.slice().reverse().map(b=>`
+      <div class="list-item">
+        <div class="top"><span>${esc(b.method)} ${b.maleName?'— '+esc(b.maleName):''}</span><span class="date">${fmtDate(b.date)}</span></div>
+        <div class="muted">${b.time?'الوقت: '+b.time+' · ':''}بواسطة: ${esc(b.by||'—')}</div>
+        ${b.notes?`<div class="muted">${esc(b.notes)}</div>`:''}
+      </div>`).join('') : `<div class="empty">لا يوجد سجل تلقيح بعد</div>`}
+  `;
+}
+function openAddBreeding(id){
+  const a = animalById(id);
+  const males = state.animals.filter(x=>x.type===a.type && x.id!==a.id && x.gender!==a.gender && x.status==='موجود في المزرعة');
+  openModal('تسجيل تلقيح', `
+    <div class="field-row">
+      <div class="field"><label>تاريخ التلقيح</label><input type="date" id="bDate" value="${todayISO()}"></div>
+      <div class="field"><label>الوقت</label><input type="time" id="bTime" value="${nowTimeStr()}"></div>
+    </div>
+    <div class="field"><label>طريقة التلقيح</label><select id="bMethod"><option>طبيعي</option><option>صناعي</option></select></div>
+    <div class="field"><label>الطرف الآخر (إن وجد في النظام)</label>
+      <select id="bMale"><option value="">— غير محدد —</option>${males.map(m=>`<option value="${m.id}">${esc(animalLabel(m))}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label>اسم الطرف الآخر (إن لم يكن مسجلًا)</label><input id="bMaleName"></div>
+    <div class="field"><label>بواسطة</label><input id="bBy"></div>
+    <div class="field"><label>موعد فحص الحمل المتوقع</label><input type="date" id="bCheck"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="bNotes"></textarea></div>
+    <button class="btn block" onclick="saveBreeding('${id}')">حفظ</button>
+  `);
+}
+function saveBreeding(id){
+  const a = animalById(id);
+  const maleId = document.getElementById('bMale').value || null;
+  const male = maleId ? animalById(maleId) : null;
+  const b = {
+    id: uid('br'),
+    date: document.getElementById('bDate').value,
+    time: document.getElementById('bTime').value,
+    method: document.getElementById('bMethod').value,
+    maleId, maleName: male ? animalLabel(male) : document.getElementById('bMaleName').value.trim(),
+    by: document.getElementById('bBy').value.trim(),
+    pregCheckDate: document.getElementById('bCheck').value,
+    notes: document.getElementById('bNotes').value.trim()
+  };
+  a.breedings.push(b);
+  addTimeline(a, `تلقيح (${b.method}) ${b.maleName?'مع '+b.maleName:''}`, 'تلقيح');
+  saveState(); closeModal(); showToast('تم تسجيل التلقيح'); profileTab='breeding'; renderView();
+}
+
+/* ---- Pregnancy ---- */
+function tabPregnancy(a){
+  if(a.pregnancy && a.pregnancy.active){
+    const days = daysBetween(a.pregnancy.breedingDate, todayISO());
+    const total = daysBetween(a.pregnancy.breedingDate, a.pregnancy.dueDate);
+    const pct = Math.max(0, Math.min(100, Math.round((days/total)*100)));
+    const remaining = daysBetween(todayISO(), a.pregnancy.dueDate);
+    return `
+      <div class="list-item">
+        <div class="kv"><span class="k">تاريخ التلقيح</span><span class="v">${fmtDate(a.pregnancy.breedingDate)}</span></div>
+        <div class="kv"><span class="k">تاريخ تأكيد الحمل</span><span class="v">${fmtDate(a.pregnancy.confirmedDate)}</span></div>
+        <div class="kv"><span class="k">أكّد الحمل</span><span class="v">${esc(a.pregnancy.confirmedBy||'—')}</span></div>
+        <div class="kv"><span class="k">مدة الحمل الحالية</span><span class="v">${calcAge(a.pregnancy.breedingDate)}</span></div>
+        <div class="kv"><span class="k">موعد الولادة المتوقع</span><span class="v">${fmtDate(a.pregnancy.dueDate)}</span></div>
+        <div class="kv"><span class="k">الأيام المتبقية</span><span class="v">${remaining<0?'تجاوزت الموعد':remaining+' يوم'}</span></div>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="muted" style="text-align:center">${pct}% من مدة الحمل</div>
+      <div class="grid2" style="margin-top:12px">
+        <button class="btn" onclick="navigate('animalProfile',{id:'${a.id}'}); profileTab='births'; openAddBirth('${a.id}')">تسجيل الولادة</button>
+        <button class="btn danger ghost" onclick="cancelPregnancy('${a.id}')">إلغاء تسجيل الحمل</button>
+      </div>
+    `;
+  }
+  const lastBreeding = (a.breedings||[]).slice(-1)[0];
+  return `
+    <div class="empty">لا يوجد حمل مسجل حاليًا</div>
+    <button class="btn block" style="margin-top:10px" onclick="openConfirmPregnancy('${a.id}')">+ تأكيد حمل</button>
+    ${lastBreeding?`<div class="muted" style="text-align:center;margin-top:6px">آخر تلقيح: ${fmtDate(lastBreeding.date)}</div>`:''}
+  `;
+}
+function openConfirmPregnancy(id){
+  const a = animalById(id);
+  const breedings = a.breedings||[];
+  openModal('تأكيد حمل', `
+    <div class="field"><label>مرتبط بتلقيح سابق (إن وجد)</label>
+      <select id="pBreeding" onchange="document.getElementById('pBreedDate').value=this.value">
+        <option value="">— إدخال تاريخ يدويًا —</option>
+        ${breedings.slice().reverse().map(b=>`<option value="${b.date}">${fmtDate(b.date)} — ${esc(b.method)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>تاريخ التلقيح</label><input type="date" id="pBreedDate" value="${breedings.length?breedings[breedings.length-1].date:todayISO()}"></div>
+    <div class="field"><label>تاريخ تأكيد الحمل</label><input type="date" id="pConfirmDate" value="${todayISO()}"></div>
+    <div class="field"><label>أكّد الحمل (الطبيب/الشخص)</label><input id="pBy"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="pNotes"></textarea></div>
+    <button class="btn block" onclick="savePregnancy('${id}')">حفظ</button>
+  `);
+}
+function savePregnancy(id){
+  const a = animalById(id);
+  const breedingDate = document.getElementById('pBreedDate').value;
+  const gest = state.settings.gestation[a.type] || 283;
+  const due = new Date(breedingDate+'T00:00:00');
+  due.setDate(due.getDate()+gest);
+  a.pregnancy = {
+    active:true,
+    breedingDate,
+    confirmedDate: document.getElementById('pConfirmDate').value,
+    confirmedBy: document.getElementById('pBy').value.trim(),
+    dueDate: due.toISOString().slice(0,10),
+    notes: document.getElementById('pNotes').value.trim()
+  };
+  addTimeline(a, 'تأكيد الحمل — موعد الولادة المتوقع: '+fmtDate(a.pregnancy.dueDate), 'حمل');
+  saveState(); closeModal(); showToast('تم تسجيل الحمل'); profileTab='pregnancy'; renderView();
+}
+function cancelPregnancy(id){
+  const a = animalById(id);
+  if(!confirm('هل تريد إلغاء تسجيل الحمل الحالي؟')) return;
+  a.pregnancy = null;
+  addTimeline(a, 'تم إلغاء تسجيل الحمل', 'حمل');
+  saveState(); showToast('تم الإلغاء'); renderView();
+}
+
+/* ---- Births ---- */
+function tabBirths(a){
+  return `
+    <button class="btn block" onclick="openAddBirth('${a.id}')">+ تسجيل ولادة</button>
+    <div class="section-title" style="font-size:14.5px">سجل الولادات</div>
+    ${(a.births||[]).length ? a.births.slice().reverse().map(b=>`
+      <div class="list-item">
+        <div class="top"><span>${b.count} مولود (${esc(b.type)})</span><span class="date">${fmtDate(b.date)}</span></div>
+        <div class="muted">الجنس: ${esc(b.offspringGender||'—')} · الوزن: ${b.weight||'—'} كجم · الحالة: ${esc(b.condition||'—')}</div>
+        ${b.notes?`<div class="muted">${esc(b.notes)}</div>`:''}
+        <div style="margin-top:6px">
+          ${(b.offspringIds||[]).length ? b.offspringIds.map(oid=>{const o=animalById(oid); return o?`<span class="chip" style="cursor:pointer" onclick="navigate('animalProfile',{id:'${o.id}'})">${esc(o.customId)}</span>`:'';}).join(' ')
+          : `<button class="btn small ghost" onclick="createOffspring('${a.id}','${b.id}')">إنشاء ملف للمولود</button>`}
+        </div>
+      </div>`).join('') : `<div class="empty">لا توجد ولادات مسجلة</div>`}
+  `;
+}
+function openAddBirth(id){
+  const a = animalById(id);
+  openModal('تسجيل ولادة', `
+    <div class="field-row">
+      <div class="field"><label>تاريخ الولادة</label><input type="date" id="brDate" value="${todayISO()}"></div>
+      <div class="field"><label>الوقت</label><input type="time" id="brTime" value="${nowTimeStr()}"></div>
+    </div>
+    <div class="field"><label>نوع الولادة</label><select id="brType"><option>طبيعية</option><option>بمساعدة</option></select></div>
+    <div class="field-row">
+      <div class="field"><label>عدد المواليد</label><input type="number" id="brCount" value="1" min="1"></div>
+      <div class="field"><label>جنس المولود الرئيسي</label><select id="brGender"><option>ذكر</option><option>أنثى</option><option>مختلط</option></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>الوزن (كجم)</label><input type="number" id="brWeight"></div>
+      <div class="field"><label>حالة المولود</label><input id="brCondition" placeholder="سليم / يحتاج متابعة"></div>
+    </div>
+    <div class="field"><label>ملاحظات</label><textarea id="brNotes"></textarea></div>
+    <button class="btn block" onclick="saveBirth('${id}')">حفظ الولادة</button>
+  `);
+}
+function saveBirth(id){
+  const a = animalById(id);
+  const b = {
+    id: uid('br'),
+    date: document.getElementById('brDate').value,
+    time: document.getElementById('brTime').value,
+    type: document.getElementById('brType').value,
+    count: parseInt(document.getElementById('brCount').value)||1,
+    offspringGender: document.getElementById('brGender').value,
+    weight: parseFloat(document.getElementById('brWeight').value)||null,
+    condition: document.getElementById('brCondition').value.trim(),
+    notes: document.getElementById('brNotes').value.trim(),
+    offspringIds: []
+  };
+  a.births.push(b);
+  if(a.pregnancy){ a.pregnancy.active=false; }
+  addTimeline(a, `ولادة (${b.count} مولود) — ${b.type}`, 'ولادة');
+  saveState(); closeModal(); showToast('تم تسجيل الولادة'); profileTab='births'; renderView();
+}
+function createOffspring(motherId, birthId){
+  const mother = animalById(motherId);
+  const birth = mother.births.find(x=>x.id===birthId);
+  const gender = birth.offspringGender==='مختلط' ? 'أنثى' : birth.offspringGender;
+  openAddAnimal({
+    type: mother.type, gender, birthDate: birth.date, weight: birth.weight,
+    motherId: mother.id, fatherId: (mother.breedings.slice(-1)[0]||{}).maleId || null,
+    location: mother.location, _offspringOf: birthId
+  });
+  // patch saveAnimal to link back after creation
+  window.__linkBirth = { motherId, birthId };
+}
+const _origSaveAnimal = saveAnimal;
+saveAnimal = function(offspringOfBirthCtx){
+  _origSaveAnimal(offspringOfBirthCtx);
+  if(window.__linkBirth){
+    const mother = animalById(window.__linkBirth.motherId);
+    const birth = mother.births.find(x=>x.id===window.__linkBirth.birthId);
+    const newAnimal = state.animals[state.animals.length-1];
+    birth.offspringIds.push(newAnimal.id);
+    addTimeline(mother, `تم إنشاء ملف للمولود: ${newAnimal.customId}`, 'ولادة');
+    window.__linkBirth = null;
+    saveState();
+  }
+};
+
+/* ---- Health ---- */
+function tabHealth(a){
+  return `
+    <button class="btn block" onclick="openAddHealth('${a.id}')">+ تسجيل حالة صحية</button>
+    <div class="section-title" style="font-size:14.5px">الحالات الصحية</div>
+    ${(a.healthCases||[]).length ? a.healthCases.slice().reverse().map(h=>`
+      <div class="list-item">
+        <div class="top"><span><span class="dot ${healthColor(h.severity)}" style="display:inline-block;vertical-align:middle;margin-left:4px"></span>${esc(h.diagnosis||h.symptoms)}</span><span class="date">${fmtDate(h.date)}</span></div>
+        <div class="muted">الأعراض: ${esc(h.symptoms||'—')} · الطبيب: ${esc(h.vet||'—')}</div>
+        ${h.treatment?`<div class="muted">العلاج: ${esc(h.treatment)}</div>`:''}
+        ${h.notes?`<div class="muted">${esc(h.notes)}</div>`:''}
+      </div>`).join('') : `<div class="empty">لا توجد حالات صحية مسجلة</div>`}
+  `;
+}
+function openAddHealth(id){
+  openModal('تسجيل حالة صحية', `
+    <div class="field"><label>تاريخ ظهور الحالة</label><input type="date" id="hDate" value="${todayISO()}"></div>
+    <div class="field"><label>الأعراض</label><textarea id="hSymptoms"></textarea></div>
+    <div class="field"><label>التشخيص</label><input id="hDiag"></div>
+    <div class="field"><label>درجة الخطورة</label>
+      <select id="hSeverity"><option>سليم</option><option selected>تحت المراقبة</option><option>يحتاج علاج</option><option>حالة عاجلة</option></select>
+    </div>
+    <div class="field"><label>الطبيب</label><input id="hVet"></div>
+    <div class="field"><label>العلاج</label><input id="hTreatment"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="hNotes"></textarea></div>
+    <button class="btn block" onclick="saveHealth('${id}')">حفظ</button>
+  `);
+}
+function saveHealth(id){
+  const a = animalById(id);
+  const h = {
+    id: uid('h'), date: document.getElementById('hDate').value,
+    symptoms: document.getElementById('hSymptoms').value.trim(),
+    diagnosis: document.getElementById('hDiag').value.trim(),
+    severity: document.getElementById('hSeverity').value,
+    vet: document.getElementById('hVet').value.trim(),
+    treatment: document.getElementById('hTreatment').value.trim(),
+    notes: document.getElementById('hNotes').value.trim()
+  };
+  a.healthCases.push(h);
+  a.healthStatus = h.severity;
+  addTimeline(a, `حالة صحية: ${h.diagnosis||h.symptoms} (${h.severity})`, 'صحة');
+  saveState(); closeModal(); showToast('تم حفظ الحالة الصحية'); profileTab='health'; renderView();
+}
+
+/* ---- Medications ---- */
+function tabMeds(a){
+  return `
+    <button class="btn block" onclick="openAddMed('${a.id}')">+ إضافة دواء</button>
+    <div class="section-title" style="font-size:14.5px">سجل الأدوية</div>
+    ${(a.medications||[]).length ? a.medications.slice().reverse().map(m=>`
+      <div class="list-item">
+        <div class="top"><span>${esc(m.name)}</span><span class="date">${fmtDate(m.startDate)} — ${fmtDate(m.endDate)}</span></div>
+        <div class="muted">السبب: ${esc(m.reason||'—')} · الجرعة: ${esc(m.dose||'—')} · التكرار: ${esc(m.frequency||'—')}</div>
+        ${m.vet?`<div class="muted">الطبيب: ${esc(m.vet)}</div>`:''}
+      </div>`).join('') : `<div class="empty">لا توجد أدوية مسجلة</div>`}
+  `;
+}
+function openAddMed(id){
+  openModal('إضافة دواء', `
+    <div class="field"><label>اسم الدواء</label><input id="mName"></div>
+    <div class="field"><label>سبب الاستخدام</label><input id="mReason"></div>
+    <div class="field-row">
+      <div class="field"><label>الجرعة</label><input id="mDose"></div>
+      <div class="field"><label>عدد المرات / وقت الجرعة</label><input id="mFreq" placeholder="مرتين يوميًا"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ البداية</label><input type="date" id="mStart" value="${todayISO()}"></div>
+      <div class="field"><label>تاريخ النهاية</label><input type="date" id="mEnd" value="${todayISO()}"></div>
+    </div>
+    <div class="field"><label>الطبيب</label><input id="mVet"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="mNotes"></textarea></div>
+    <button class="btn block" onclick="saveMed('${id}')">حفظ</button>
+  `);
+}
+function saveMed(id){
+  const a = animalById(id);
+  const m = {
+    id: uid('m'), name: document.getElementById('mName').value.trim(),
+    reason: document.getElementById('mReason').value.trim(),
+    dose: document.getElementById('mDose').value.trim(),
+    frequency: document.getElementById('mFreq').value.trim(),
+    startDate: document.getElementById('mStart').value,
+    endDate: document.getElementById('mEnd').value,
+    vet: document.getElementById('mVet').value.trim(),
+    notes: document.getElementById('mNotes').value.trim()
+  };
+  a.medications.push(m);
+  addTimeline(a, `بدء دواء: ${m.name}`, 'دواء');
+  saveState(); closeModal(); showToast('تم إضافة الدواء'); profileTab='meds'; renderView();
+}
+
+/* ---- Vaccinations ---- */
+function tabVacc(a){
+  return `
+    <button class="btn block" onclick="openAddVacc('${a.id}')">+ إضافة تطعيم</button>
+    <div class="section-title" style="font-size:14.5px">سجل التطعيمات</div>
+    ${(a.vaccinations||[]).length ? a.vaccinations.slice().reverse().map(v=>`
+      <div class="list-item">
+        <div class="top"><span>${esc(v.name)}</span><span class="date">${fmtDate(v.date)}</span></div>
+        <div class="muted">الجرعة: ${esc(v.dose||'—')} · الجرعة القادمة: ${v.nextDate?fmtDate(v.nextDate):'—'}</div>
+        ${v.by?`<div class="muted">بواسطة: ${esc(v.by)}</div>`:''}
+      </div>`).join('') : `<div class="empty">لا توجد تطعيمات مسجلة</div>`}
+  `;
+}
+function openAddVacc(id){
+  openModal('إضافة تطعيم', `
+    <div class="field"><label>اسم التطعيم</label><input id="vName"></div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ التطعيم</label><input type="date" id="vDate" value="${todayISO()}"></div>
+      <div class="field"><label>الجرعة</label><input id="vDose"></div>
+    </div>
+    <div class="field"><label>تاريخ الجرعة القادمة</label><input type="date" id="vNext"></div>
+    <div class="field"><label>الطبيب / المسؤول</label><input id="vBy"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="vNotes"></textarea></div>
+    <button class="btn block" onclick="saveVacc('${id}')">حفظ</button>
+  `);
+}
+function saveVacc(id){
+  const a = animalById(id);
+  const v = {
+    id: uid('v'), name: document.getElementById('vName').value.trim(),
+    date: document.getElementById('vDate').value,
+    dose: document.getElementById('vDose').value.trim(),
+    nextDate: document.getElementById('vNext').value,
+    by: document.getElementById('vBy').value.trim(),
+    notes: document.getElementById('vNotes').value.trim()
+  };
+  a.vaccinations.push(v);
+  addTimeline(a, `تطعيم: ${v.name}`, 'تطعيم');
+  saveState(); closeModal(); showToast('تم إضافة التطعيم'); profileTab='vacc'; renderView();
+}
+
+/* ---- Weight ---- */
+function tabWeight(a){
+  const ws = a.weights||[];
+  let chart = '';
+  if(ws.length>=2){
+    const vals = ws.map(w=>w.weight);
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const w=300,h=90,pad=8;
+    const pts = ws.map((w2,i)=>{
+      const x = pad + (i/(ws.length-1))*(w-2*pad);
+      const y = h-pad - ((w2.weight-min)/((max-min)||1))*(h-2*pad);
+      return `${x},${y}`;
+    }).join(' ');
+    chart = `<svg class="weight-chart" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="#6E7F45" stroke-width="2.5"/></svg>`;
+  }
+  return `
+    <button class="btn block" onclick="openAddWeight('${a.id}')">+ تسجيل وزن</button>
+    ${chart?`<div class="list-item">${chart}</div>`:''}
+    <div class="section-title" style="font-size:14.5px">سجل الوزن</div>
+    ${ws.length ? ws.slice().reverse().map(w=>`
+      <div class="list-item"><div class="top"><span>${w.weight} كجم</span><span class="date">${fmtDate(w.date)}</span></div>${w.notes?`<div class="muted">${esc(w.notes)}</div>`:''}</div>
+    `).join('') : `<div class="empty">لا توجد قراءات وزن</div>`}
+  `;
+}
+function openAddWeight(id){
+  openModal('تسجيل وزن', `
+    <div class="field"><label>التاريخ</label><input type="date" id="wDate" value="${todayISO()}"></div>
+    <div class="field"><label>الوزن (كجم)</label><input type="number" id="wVal"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="wNotes"></textarea></div>
+    <button class="btn block" onclick="saveWeight('${id}')">حفظ</button>
+  `);
+}
+function saveWeight(id){
+  const a = animalById(id);
+  const w = { date: document.getElementById('wDate').value, weight: parseFloat(document.getElementById('wVal').value), notes: document.getElementById('wNotes').value.trim() };
+  a.weights.push(w); a.weight = w.weight;
+  addTimeline(a, `تسجيل وزن: ${w.weight} كجم`, 'وزن');
+  saveState(); closeModal(); showToast('تم تسجيل الوزن'); profileTab='weight'; renderView();
+}
+
+/* ---- Follow-ups ---- */
+function tabFollowups(a){
+  return `
+    <button class="btn block" onclick="openAddFollowup('${a.id}')">+ إضافة أمر متابعة</button>
+    <div class="section-title" style="font-size:14.5px">أوامر المتابعة</div>
+    ${(a.followUps||[]).length ? a.followUps.slice().reverse().map(f=>`
+      <div class="list-item">
+        <div class="top"><span>${esc(f.reason)}</span><span class="chip ${f.active && isDueDateTime(f.nextDue)?'':'soft'}">${f.active?'نشطة':'متوقفة'}</span></div>
+        <div class="muted">${esc(f.instructions||'')}</div>
+        <div class="muted">الموعد القادم: ${f.nextDue?fmtDateTime(f.nextDue):'—'} · المسؤول: ${esc(f.responsible||'—')}</div>
+        ${f.active?`<button class="btn small" style="margin-top:8px" onclick="openCompleteFollowup('${a.id}','${f.id}')">تمت المتابعة</button>
+        <button class="btn small ghost" style="margin-top:8px" onclick="stopFollowup('${a.id}','${f.id}')">إيقاف</button>`:''}
+        ${(f.log||[]).length?`<div class="muted" style="margin-top:6px">آخر ملاحظة: ${esc(f.log[f.log.length-1].note||'—')} (${fmtDateTime(f.log[f.log.length-1].at||f.log[f.log.length-1].date)})</div>`:''}
+      </div>`).join('') : `<div class="empty">لا توجد أوامر متابعة</div>`}
+  `;
+}
+function openAddFollowup(id){
+  openModal('إضافة أمر متابعة', `
+    <div class="field"><label>سبب المتابعة</label><input id="fuReason"></div>
+    <div class="field"><label>تعليمات المتابعة</label><textarea id="fuInstr"></textarea></div>
+    <div class="field"><label>تكرار المتابعة</label>
+      <select id="fuFreq" onchange="document.getElementById('fuCustomWrap').style.display=this.value==='custom'?'block':'none';">
+        <option value="1">كل ساعة</option>
+        <option value="3">كل 3 ساعات</option>
+        <option value="12">مرتين يوميًا</option>
+        <option value="24" selected>مرة يوميًا</option>
+        <option value="custom">مخصص (بالساعات)</option>
+      </select>
+    </div>
+    <div class="field" id="fuCustomWrap" style="display:none"><label>عدد الساعات</label><input type="number" id="fuCustomHours" value="6"></div>
+    <div class="field"><label>الشخص المسؤول</label><input id="fuBy"></div>
+    <button class="btn block" onclick="saveFollowup('${id}')">حفظ</button>
+  `);
+}
+function saveFollowup(id){
+  const a = animalById(id);
+  const freqSel = document.getElementById('fuFreq').value;
+  const hours = freqSel==='custom' ? parseInt(document.getElementById('fuCustomHours').value)||24 : parseInt(freqSel);
+  const next = new Date(); next.setHours(next.getHours()+hours);
+  const f = {
+    id: uid('fu'),
+    reason: document.getElementById('fuReason').value.trim(),
+    instructions: document.getElementById('fuInstr').value.trim(),
+    frequencyHours: hours,
+    responsible: document.getElementById('fuBy').value.trim(),
+    active: true,
+    nextDue: next.toISOString(),
+    log: []
+  };
+  a.followUps.push(f);
+  addTimeline(a, `أمر متابعة جديد: ${f.reason}`, 'متابعة');
+  saveState(); closeModal(); showToast('تم إضافة أمر المتابعة'); profileTab='followups'; renderView();
+}
+function openCompleteFollowup(animalId, fuId){
+  openModal('تمت المتابعة', `
+    <div class="field"><label>الملاحظة</label><textarea id="cfNote"></textarea></div>
+    <div class="field"><label>الحالة</label><select id="cfStatus"><option>طبيعية</option><option>تحتاج انتباه</option></select></div>
+    <button class="btn block" onclick="completeFollowup('${animalId}','${fuId}')">حفظ</button>
+  `);
+}
+function completeFollowup(animalId, fuId){
+  const a = animalById(animalId);
+  const f = a.followUps.find(x=>x.id===fuId);
+  const note = document.getElementById('cfNote').value.trim();
+  const status = document.getElementById('cfStatus').value;
+  f.log.push({ at: new Date().toISOString(), note, status, by: f.responsible });
+  const next = new Date(); next.setHours(next.getHours()+f.frequencyHours);
+  f.nextDue = next.toISOString();
+  addTimeline(a, `تمت متابعة: ${f.reason} (${status})`, 'متابعة');
+  saveState(); closeModal(); showToast('تم تسجيل المتابعة'); profileTab='followups'; renderView();
+}
+function stopFollowup(animalId, fuId){
+  const a = animalById(animalId);
+  const f = a.followUps.find(x=>x.id===fuId);
+  f.active = false;
+  saveState(); renderView();
+}
+
+/* ---- Timeline ---- */
+function tabTimeline(a){
+  const tl = a.timeline||[];
+  if(!tl.length) return `<div class="empty">لا يوجد سجل بعد</div>`;
+  return `<div class="timeline">${tl.map(t=>`<div class="tl-item"><div class="tl-date">${fmtDate(t.date)}</div><div class="tl-text">${esc(t.text)}</div></div>`).join('')}</div>`;
+}
+
+/* ============================= UPCOMING BIRTHS ============================= */
+function renderUpcomingBirths(){
+  const preg = state.animals.filter(a=>a.pregnancy && a.pregnancy.active && a.status==='موجود في المزرعة')
+    .sort((x,y)=> new Date(x.pregnancy.dueDate) - new Date(y.pregnancy.dueDate));
+  return `
+    <div class="section-title">الولادات القادمة</div>
+    ${preg.length ? preg.map(a=>{
+      const rem = daysBetween(todayISO(), a.pregnancy.dueDate);
+      const color = rem<=3?'red':rem<=7?'orange':rem<=30?'yellow':'green';
+      return `<div class="alert ${color}" onclick="navigate('animalProfile',{id:'${a.id}'})">
+          <div class="dot ${color}"></div>
+          <div class="alert-text"><b>${esc(a.customId)}</b> ${esc(a.name||'')}<br>
+          موعد الولادة المتوقع: ${fmtDate(a.pregnancy.dueDate)}<br>
+          <span class="muted">${rem<0?'تجاوزت الموعد بـ '+(-rem)+' يوم':'باقي: '+rem+' يوم'}</span></div>
+        </div>`;
+    }).join('') : `<div class="empty">لا توجد حالات حمل نشطة حاليًا</div>`}
+  `;
+}
+
+/* ============================= TASKS ============================= */
+function renderTasks(){
+  const pending = state.tasks.filter(t=>!t.done).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+  const done = state.tasks.filter(t=>t.done);
+  return `
+    <div class="section-title">المهام</div>
+    <button class="btn block" onclick="openAddTask()">+ إضافة مهمة</button>
+    <div class="section-title" style="font-size:14.5px">قيد التنفيذ (${pending.length})</div>
+    ${pending.length ? pending.map(t=>taskItem(t)).join('') : `<div class="empty">لا توجد مهام قيد التنفيذ</div>`}
+    ${done.length ? `<div class="section-title" style="font-size:14.5px">مكتملة</div>` + done.slice(-10).reverse().map(t=>taskItem(t)).join('') : ''}
+  `;
+}
+function taskItem(t){
+  const animal = t.animalId ? animalById(t.animalId) : null;
+  return `<div class="list-item" style="display:flex;justify-content:space-between;align-items:center">
+    <div onclick="toggleTaskDone('${t.id}')" style="cursor:pointer;flex:1">
+      <div>${t.done?'☑':'☐'} ${esc(t.title)} ${animal?'— '+esc(animal.customId):''}</div>
+      <div class="muted">${t.dueDate?fmtDate(t.dueDate):''} ${t.type?'· '+esc(t.type):''}</div>
+    </div>
+    <button class="icon-btn" style="background:transparent;color:var(--brown-soft)" onclick="deleteTask('${t.id}')">🗑</button>
+  </div>`;
+}
+function openAddTask(){
+  openModal('إضافة مهمة', `
+    <div class="field"><label>عنوان المهمة</label><input id="tTitle"></div>
+    <div class="field"><label>مرتبطة بحيوان (اختياري)</label>
+      <select id="tAnimal"><option value="">— بدون —</option>${state.animals.map(a=>`<option value="${a.id}">${esc(animalLabel(a))}</option>`).join('')}</select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ الاستحقاق</label><input type="date" id="tDue" value="${todayISO()}"></div>
+      <div class="field"><label>التكرار</label><select id="tType"><option>مرة واحدة</option><option>يوميًا</option><option>أسبوعيًا</option></select></div>
+    </div>
+    <button class="btn block" onclick="saveTask()">حفظ</button>
+  `);
+}
+function saveTask(){
+  const t = {
+    id: uid('t'), title: document.getElementById('tTitle').value.trim(),
+    animalId: document.getElementById('tAnimal').value || null,
+    dueDate: document.getElementById('tDue').value,
+    type: document.getElementById('tType').value,
+    done:false
+  };
+  if(!t.title){ showToast('الرجاء إدخال عنوان المهمة'); return; }
+  state.tasks.push(t);
+  saveState(); closeModal(); showToast('تمت إضافة المهمة'); renderView();
+}
+function toggleTaskDone(id){
+  const t = state.tasks.find(x=>x.id===id);
+  t.done = !t.done;
+  if(t.done && t.type!=='مرة واحدة'){
+    const next = new Date(t.dueDate);
+    next.setDate(next.getDate() + (t.type==='يوميًا'?1:7));
+    state.tasks.push({...t, id:uid('t'), dueDate: next.toISOString().slice(0,10), done:false});
+  }
+  saveState(); renderView();
+}
+function deleteTask(id){
+  state.tasks = state.tasks.filter(x=>x.id!==id);
+  saveState(); renderView();
+}
+
+/* ============================= MORE / SETTINGS ============================= */
+function renderMore(){
+  return `
+    <div class="section-title">المزيد</div>
+    <div class="drawer-list">
+      <div class="list-item" onclick="navigate('settings')"><span><span class="ic">⚙️</span> الإعدادات</span><span>›</span></div>
+      <div class="list-item" onclick="openSearch()"><span><span class="ic">🔍</span> البحث</span><span>›</span></div>
+      <div class="list-item" onclick="navigate('alerts')"><span><span class="ic">🔔</span> مركز التنبيهات</span><span>›</span></div>
+    </div>
+    <div class="empty" style="margin-top:16px">الأقسام القادمة: المصاريف، البيع والشراء، مخزون الأعلاف والأدوية، رموز QR، التقارير والتصدير — يتم إضافتها في المرحلة التالية بعد اعتماد النسخة الأولى.</div>
+    <button class="btn ghost block" style="margin-top:16px" onclick="logout()">تسجيل الخروج</button>
+  `;
+}
+function renderSettings(){
+  const s = state.settings;
+  return `
+    <div class="section-title">الإعدادات</div>
+    <div class="field"><label>اسم المزرعة</label><input id="setFarm" value="${esc(s.farmName)}"></div>
+    <div class="section-title" style="font-size:14.5px">الحساب</div>
+    <div class="list-item"><div class="kv"><span class="k">البريد الإلكتروني</span><span class="v">${esc(session.user?.email||'—')}</span></div></div>
+    <div class="section-title" style="font-size:14.5px">مدة الحمل (بالأيام)</div>
+    <div class="grid3">
+      <div class="field"><label>أبقار</label><input type="number" id="setGCow" value="${s.gestation.cow}"></div>
+      <div class="field"><label>إبل</label><input type="number" id="setGCamel" value="${s.gestation.camel}"></div>
+      <div class="field"><label>غنم</label><input type="number" id="setGSheep" value="${s.gestation.sheep}"></div>
+    </div>
+    <button class="btn block" onclick="saveSettings()">حفظ الإعدادات</button>
+  `;
+}
+function saveSettings(){
+  state.settings.farmName = document.getElementById('setFarm').value.trim() || 'الجليديه';
+  state.settings.gestation.cow = parseInt(document.getElementById('setGCow').value)||283;
+  state.settings.gestation.camel = parseInt(document.getElementById('setGCamel').value)||390;
+  state.settings.gestation.sheep = parseInt(document.getElementById('setGSheep').value)||150;
+  saveState(); showToast('تم حفظ الإعدادات');
+}
+
+/* ============================= SEARCH ============================= */
+function openSearch(){
+  const ov = document.createElement('div');
+  ov.className='search-overlay'; ov.id='searchOverlay';
+  ov.innerHTML = `
+    <div class="search-input-wrap">
+      <button class="icon-btn" onclick="document.getElementById('searchOverlay').remove()">✕</button>
+      <input id="searchBox" placeholder="ابحث بالرقم، الاسم، السلالة، رقم الأب أو الأم" oninput="doSearch(this.value)">
+    </div>
+    <div class="view" id="searchResults"></div>
+  `;
+  document.body.appendChild(ov);
+  setTimeout(()=>document.getElementById('searchBox').focus(),50);
+}
+function doSearch(q){
+  q = q.trim().toLowerCase();
+  const res = document.getElementById('searchResults');
+  if(!q){ res.innerHTML=''; return; }
+  const matches = state.animals.filter(a=>{
+    const father = a.fatherId ? animalById(a.fatherId) : null;
+    const mother = a.motherId ? animalById(a.motherId) : null;
+    const hay = [a.customId,a.name,a.type,a.breed,father?father.customId:'',mother?mother.customId:''].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  res.innerHTML = matches.length ? matches.map(a=>`<div onclick="document.getElementById('searchOverlay').remove(); navigate('animalProfile',{id:'${a.id}'})">${animalCard(a)}</div>`).join('') : `<div class="empty">لا توجد نتائج</div>`;
+}
+
+/* ============================= INIT ============================= */
+async function init(){
+  const { data:{ session: authSession } } = await supabaseClient.auth.getSession();
+  if(authSession){
+    session.loggedIn = true;
+    session.user = authSession.user;
+    await loadState();
+  } else {
+    state = defaultState();
+  }
+  renderApp();
+}
+init();
+</script>
+</body>
+</html>
